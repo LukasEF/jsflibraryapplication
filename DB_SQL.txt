@@ -1,0 +1,82 @@
+drop table LoanHistory;
+drop table Loan;
+drop table Copy;
+drop table Book;
+drop table Member;
+drop table Librarian;
+
+create table Librarian (
+	id integer not null primary key generated always as identity (start with 1, increment by 1),
+	librarianName varchar(20) not null,
+	username varchar(10) not null unique,
+	pwd varchar(50) not null
+);
+
+create table Member (
+	id integer not null primary key generated always as identity (start with 1001, increment by 1),
+	memberName varchar(20) not null,
+	username varchar(10) not null unique,
+	pwd varchar(50) not null
+);
+
+create table Book (
+	id integer not null primary key generated always as identity (start with 20001, increment by 1),
+	title varchar(40) not null,
+	author varchar(20) not null,
+	isbn varchar(13) not null unique
+);
+
+create table Copy (
+	id integer not null primary key generated always as identity (start with 30001, increment by 1),
+	bookId integer,
+	referenceOnly boolean not null,
+	constraint book_FK foreign key(bookId) references Book(id)
+);
+
+create table Loan (
+	id integer not null primary key generated always as identity (start with 40001, increment by 1),
+	memberId integer not null,
+	copyId integer not null,
+	loanDate Date not null,
+	dueDate Date not null,
+	numRenewals integer not null,
+	constraint member_FK foreign key(memberId) references Member(id),
+	constraint copy_FK foreign key(copyId) references Copy(id)
+);
+
+create table LoanHistory (
+	id integer not null primary key generated always as identity (start with 40001, increment by 1),
+	memberId integer not null,
+	copyId integer not null,
+	loanDate Date not null,
+	dueDate Date not null,
+	returnDate Date not null,
+	numRenewals integer not null,
+	constraint memberHistory_FK foreign key(memberId) references Member(id),
+	constraint copyHistory_FK foreign key(copyId) references Copy(id)
+);
+
+insert into Librarian (librarianName, username, pwd) values ('Graham Librarian', 'admin', 'jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=');
+
+insert into Member (memberName, username, pwd) values ('Graham Borrower', 'gdm', 'mT9WZSGUaNeWE9RsUYJ+Mo5xHWgaoKEpFo3XATkkrXI=');
+insert into Member (memberName, username, pwd) values ('Nic Borrower', 'nic', 'Dhcz77Zpl5pwnwW6Co0nJQlRk8+B/QW3W3zv5cSOA/k=');
+insert into Member (memberName, username, pwd) values ('Ben Borrower', 'ben', 'ZwCGnI/3SA40pwpwiwKHANuqOgM7VlK5A6/on0mjFFY=');
+
+insert into Book (title, author, isbn) values ('JSF for everyone', 'Graham Mansfield', '123-456-7890X');
+insert into Book (title, author, isbn) values ('Android apps for developers', 'Nic Shulver', '435-768-1835A');
+insert into Book (title, author, isbn) values ('Web services for back-end developers', 'Ben Bastaki', '924-623-6644Y');
+
+insert into Copy (bookId, referenceOnly) values (20001, true);
+insert into Copy (bookId, referenceOnly) values (20001, false);
+insert into Copy (bookId, referenceOnly) values (20001, false);
+insert into Copy (bookId, referenceOnly) values (20002, false);
+insert into Copy (bookId, referenceOnly) values (20002, false);
+insert into Copy (bookId, referenceOnly) values (20003, false);
+insert into Copy (bookId, referenceOnly) values (20003, false);
+insert into Copy (bookId, referenceOnly) values (20003, true);
+insert into Copy (bookId, referenceOnly) values (20003, false);
+
+insert into Loan (memberId, copyId, loanDate, dueDate, numRenewals) values (1001, 30002, '2018-02-10', '2018-02-24', 0);
+
+insert into LoanHistory (memberId, copyId, loanDate, dueDate, returnDate, numRenewals) values (1001, 30004, '2017-12-10', '2017-12-24', '2017-12-24', 2);
+
